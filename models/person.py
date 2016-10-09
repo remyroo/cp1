@@ -1,24 +1,21 @@
 class Person(object):
+	def __init__(self, person):
+		self.person = person
+		self.assigned_office = ""
+	
+	def __repr__(self):
+		return "%s" % self.person
 
-	def create_person(self, name):
-		pass
+	@property
+	def role(self):
+		return self.__class__.__name__
 
-	def get_number_of_people(self):
-		pass
+class Staff(Person):	
+	pass
 
-	def reallocate_person(self, name, room_name):
-		pass
+class Fellow(Person):
+	assigned_living = ""
+	pass
 
-	def get_list_of_people_in_room(self, room_name):
-		pass
-
-	def load_people(self, filname):
-		pass
-
-	def print_room_allocations(self, filename):
-		pass
-
-	def print_unallocated_people(self, filename):
-		pass
 
 
