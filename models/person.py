@@ -4,7 +4,7 @@ class Person(object):
 		self.assigned_office = ""
 	
 	def __repr__(self):
-		return "%s" % self.person
+		return "%s" % (self.person)
 
 	@property
 	def role(self):
@@ -14,8 +14,11 @@ class Staff(Person):
 	pass
 
 class Fellow(Person):
-	assigned_living = ""
-	pass
+	def __init__(self, person):
+		super(Fellow, self).__init__(person)
+		self.accomodation = "yes"
+		self.assigned_living = ""
+	
 
 
 

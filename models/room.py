@@ -4,16 +4,15 @@ class Room(object):
 		self.occupants = []
 	
 	def __repr__(self):
-		return "%s" % self.room_name
+		return "%s" % (self.room_name)
 
 	@property
 	def room_type(self):
 		return self.__class__.__name__
 
 class OfficeSpace(Room):
-	capacity = 6
-	pass
+	capacity = 6	
 
 class LivingSpace(Room):
 	capacity = 4
-	pass
+
