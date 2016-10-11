@@ -1,75 +1,160 @@
 import unittest
-from app.room import Room
-from app.person import Person
+from models.amity import Amity
+from models.room import Room
 
-class AmityTest(unittest.TestCase):
+class RoomTest(unittest.TestCase):
+
+	def setUp(self):
+		self.amity = Amity()
 
 	def test_room_creation(self):
-		room = Room()
-		oculus = room.create_room("oculus")
-		self.assertTrue(oculus, msg="Room has not been created")
+		room_list = self.amity.get_list_of_rooms()
+		self.assertEqual(len(room_list), 0)
+		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+		self.amity.create_room({"room_name": "java", "room_type": "living"})
+		self.assertEqual(len(room_list), 2)
+	
+	def test_office_space_added_to_list_of_offices(self):
+	  	room_list = self.amity.get_list_of_office_spaces()
+	  	self.assertEqual(len(room_list), 0)
+	  	self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+	  	self.assertEqual(len(room_list), 1)
 
-	def test_the_number_of_rooms_created(self):
-		room = Room()
-		room.create_room("oculus")
-		self.assertEqual(room.get_number_of_rooms(), 1)
-
-	def test_assign_room(self):
-		room = Room()
-		person = Person()
-		rehema = person.create_person("rehema")
-		oculus = room.create_room("oculus")
-		self.assertTrue(room.assign_room(rehema, oculus), msg="Room allocation failed")
-
-	def test_if_room_is_full(self):
-		room = Room()
-		room_status = room.is_room_full("oculus")
-		self.assertTrue(room_status, msg="Room is not full")
+	def test_living_space_added_to_list_of_living_spaces(self):
+	  	room_list = self.amity.get_list_of_living_spaces()
+	  	self.assertEqual(len(room_list), 0)
+	  	self.amity.create_room({"room_name": "ruby", "room_type": "living"})
+	  	self.assertEqual(len(room_list), 1)
 
 	def test_person_creation(self):
-		person = Person()
-		rehema = person.create_person("rehema")
-		self.assertTrue(rehema, msg="Person has not been created")
+		list_of_people = self.amity.get_list_of_people()
+		self.assertEqual(len(list_of_people), 0)
+		self.amity.create_person({"person_name":"rehema wachira",
+			"role":"fellow",
+			"accomodation":"Yes"})
+		self.assertEqual(len(list_of_people), 1)
 
-	# def test_person_role_is_input_correctly(self):
-	# 	person = Person()
-	# 	rehema = person.create_person("rehema", "fellow")
+	def test_staff_added_to_staff_list(self):
+	  	total_staff_list = self.amity.get_list_of_staff()
+	  	self.assertEqual(len(total_staff_list), 0)
+	  	self.amity.create_person({"person_name":"anthony nandaa",
+			"role":"staff",
+			"accomodation":"No"})
+	  	self.assertEqual(len(total_staff_list), 1)
 
-	def test_the_number_of_people_created(self):
-		person = Person()
-		person.create_person("rehema")
-		self.assertEqual(person.get_number_of_people(), 1)
+	def test_fellow_added_to_fellow_list(self):
+	  	total_fellow_list = self.amity.get_list_of_fellows()
+	  	self.assertEqual(len(total_fellow_list), 0)
+	  	self.amity.create_person({"person_name":"rehema wachira",
+			"role":"fellow",
+			"accomodation":"No"})
+	  	self.assertEqual(len(total_fellow_list), 1)
 
-	def test_person_can_be_reallocated(self):
-		person = Person()
-		room = Room()
-		rehema = person.create_person("rehema")
-		oculus = room.create_room("oculus")
-		self.assertTrue(person.reallocate_person(rehema, oculus), msg="Person reallocation failed")
+	def test_people_added_to_allocated_people_list(self):
+		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+		self.amity.create_room({"room_name": "java", "room_type": "living"})
+		allocation_list = self.amity.get_list_of_allocated_people()
+		self.assertEqual(len(allocation_list), 0)
+		self.amity.create_person({"person_name":"percila njira",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name":"samuel gaamuwa",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.assertEqual(len(allocation_list), 2)
 
-	def test_print_names_of_all_people_in_a_specified_room(self):
-	# Print the names of all the people in the specified room
-		person = Person()
-		room = Room()
-		oculus = room.create_room("oculus")
-		total_occupants_in_room = person.get_list_of_people_in_room("oculus")
-		self.assertTrue(total_occupants_in_room, msg="Failed to return list of people in rooms")
+	def test_staff_added_to_allocated_staff_list(self):
+		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+		self.amity.create_room({"room_name": "valhalla", "room_type": "office"})
+		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
+		allocation_list = self.amity.get_list_of_allocated_staff()
+		self.assertEqual(len(allocation_list), 0)
+		self.amity.create_person({"person_name":"percila njira",
+			"role":"staff",
+			"accomodation":"No"})
+		self.assertEqual(len(self.amity.allocated_staff), 1)
 
-	def test_load_people_and_assign_them_rooms(self):
-	# Adds people to rooms from a text file
-		person = Person()
-		self.assertTrue(person.load_people("file_a.txt"), msg="File did not load")
+	def test_fellow_added_to_allocated_fellow_list(self):
+		self.amity.create_room({"room_name": "ruby", "room_type": "living"})
+		allocation_list = self.amity.get_list_of_allocated_fellows()
+		self.assertEqual(len(allocation_list), 0)
+		self.amity.create_person({"person_name":"samuel gaamuwa",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.assertEqual(len(self.amity.allocated_fellows), 1)
 
-	def test_print_list_of_room_allocations(self):
-	# Prints a list of allocations
-		person = Person()
-		self.assertTrue(person.print_room_allocations("file_a.txt"), msg="Room allocation list did not load")
+	## THIS TEST DOESNT WORK
+	def test_that_staff_are_assigned_to_office_spaces(self):
+		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
+		self.assertEqual(len(allocated_room_list), 0)
+		self.amity.create_person({"person_name":"percila njira",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name":"jackson saia",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name":"maureen maina",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "janet njoroge",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "ngibuini mwaura",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "josh mwaura",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "oscar opondo",
+			"role":"staff",
+			"accomodation":"No"})
+		self.assertEqual(len(allocated_room_list), 2)
 
-	def test_print_list_of_unallocated_people(self):
-		person = Person()
-		self.assertTrue(person.print_unallocated_people("file_a.txt"), msg="List of unallocated people did not load")
 
-	
+	## THIS TEST DOESNT WORK
+	def test_that_living_allocation_is_randomized(self):
+		self.amity.create_room({"room_name": "java", "room_type": "living"})
+		self.amity.create_room({"room_name": "ruby", "room_type": "living"})
+		self.amity.create_person({"person_name":"samuel gaamuwa",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name":"japheth obala",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name":"rehema wachira",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "ruth ogendi",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "elsis sitati",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.amity.create_person({"person_name": "arnold okoth",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.assertTrue(len(self.amity.allocated_rooms), 2)
+
+	def test_unallocated_person_list_increases_when_room_is_full(self):
+		pass
+
+	def test_reallocation_of_staff_to_rooms(self):
+		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+		self.amity.create_person({"person_name":"percila njira",
+			"role":"staff",
+			"accomodation":"No"})
+		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
+		self.amity.reallocate_person(self.amity.get_list_of_people()[0], "krypton")
+
+	def test_reallocation_of_fellow_to_rooms(self):
+		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
+		self.amity.create_person({"person_name":"samuel gaamuwa",
+			"role":"fellow",
+			"accomodation":"No"})
+		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
+		self.amity.reallocate_person(self.amity.get_list_of_people()[0], "krypton")
+		
 
 if __name__ == '__main__':
 	unittest.main()

@@ -1,0 +1,4 @@
+*.pyc
+__pycache__/
+.cp-venv/
+.~lock.class_diagram.odt#
