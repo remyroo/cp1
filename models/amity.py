@@ -33,14 +33,23 @@ class Amity(object):
 			self.living_spaces.append(new_room)
 			#print (("You have added %s to living spaces in amity") % new_room)
 		self.all_rooms.append(new_room)
+		print(self.all_rooms)
 
 	def create_person(self, person):
+		'''
+		Once a person is created they are called by the assign person function
+		to assign them an office room. 
+		If the person is a fellow and wants accomodation, the assign living room functin
+		is called.
+		'''  
+
 		if person["role"] == "staff":
 			new_person = Staff(person["person_name"])
 			self.staff_list.append(new_person)
 			#print (("You have added %s to staff in amity") % new_person)
 		else:
 			new_person = Fellow(person["person_name"])
+			new_person.accomodation = person["wants_accomodation"]
 			self.fellows_list.append(new_person)
 			#print (("You have added %s to fellows in amity") % new_person)
 			if new_person.accomodation == "yes":
@@ -59,6 +68,7 @@ class Amity(object):
 					self.allocated_people.append(new_person)
 				else:
 					random_room = self.get_random_room("office")
+				self.allocated_rooms.append(random_room)
 		elif type(new_person) == Fellow:
 			if len(self.office_spaces) > 0:
 				random_room = self.get_random_room("office")
@@ -69,18 +79,19 @@ class Amity(object):
 					self.allocated_people.append(new_person)
 				else:
 					random_room = self.get_random_room("office")
-		self.allocated_rooms.append(random_room)	
+				self.allocated_rooms.append(random_room)	
 			
 	def assign_fellow_to_living_space(self, new_person):
 		if len(self.living_spaces) > 0:
 			random_room = self.get_random_room("living")
 			if self.is_room_available(random_room) == True:
-					random_room.occupants.append(new_person)
-					new_person.assigned_office = random_room.room_name
-					self.allocated_fellows.append(new_person)
-					self.allocated_people.append(new_person)
+				random_room.occupants.append(new_person)
+				new_person.assigned_office = random_room.room_name
+				self.allocated_fellows.append(new_person)
 			else:
 				random_room = self.get_random_room("office")
+			self.allocated_rooms.append(random_room)
+			self.allocated_people.append(new_person)
 
 	def get_random_room(self, room_type):
 		random_room = ""
@@ -105,20 +116,22 @@ class Amity(object):
 	def reallocate_person(self, person, room_name):
 		rooms = []
 		for room in self.all_rooms:
-			if room.room_name == room_name:
-				rooms.append(room.room_name)
-		if room_name not in rooms:
+			rooms.append(room.room_name)
+		print(rooms)
+		if room_name.strip() not in rooms:
 			print ("Room not available")
 		elif type(person) == Staff:
 			if person.assigned_office == room_name:
 				print ("Person is currently assigned to this room")
 			else:
 				for room in self.all_rooms:
-					if room.room_name == room_name:
+					if room.room_name == room_name and type(room) == OfficeSpace:
 						room.occupants.append(person)
 						person.assigned_office = room.room_name
 						self.allocated_staff.append(person)
 						self.allocated_people.append(person)
+					elif type(room) is not OfficeSpace:
+						print("Staff cannot be assigned to living spaces")
 		elif type(person) == Fellow:
 			if person.assigned_office == room_name:
 				print ("Person is currently assigned to this office")
@@ -134,7 +147,6 @@ class Amity(object):
 					room.occupants.append(person)
 					self.allocated_fellows.append(person)
 					self.allocated_people.append(person)
-			print (room.occupants)
 		
 	def load_people(self, filname):
 			pass

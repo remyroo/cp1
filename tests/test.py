@@ -65,28 +65,27 @@ class RoomTest(unittest.TestCase):
 
 	def test_staff_added_to_allocated_staff_list(self):
 		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
-		self.amity.create_room({"room_name": "valhalla", "room_type": "office"})
-		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
-		allocation_list = self.amity.get_list_of_allocated_staff()
-		self.assertEqual(len(allocation_list), 0)
+		allocated_staff_list = self.amity.get_list_of_allocated_staff()
+		self.assertEqual(len(allocated_staff_list), 0)
 		self.amity.create_person({"person_name":"percila njira",
 			"role":"staff",
 			"accomodation":"No"})
-		self.assertEqual(len(self.amity.allocated_staff), 1)
+		self.assertEqual(len(allocated_staff_list), 1)
 
 	def test_fellow_added_to_allocated_fellow_list(self):
 		self.amity.create_room({"room_name": "ruby", "room_type": "living"})
-		allocation_list = self.amity.get_list_of_allocated_fellows()
-		self.assertEqual(len(allocation_list), 0)
+		allocated_fellow_list = self.amity.get_list_of_allocated_fellows()
+		self.assertEqual(len(allocated_fellow_list), 0)
 		self.amity.create_person({"person_name":"samuel gaamuwa",
 			"role":"fellow",
 			"accomodation":"No"})
-		self.assertEqual(len(self.amity.allocated_fellows), 1)
+		self.assertEqual(len(allocated_fellow_list), 1)
 
-	## THIS TEST DOESNT WORK
+	# Can you test that room now has person in room.occupants list?
 	def test_that_staff_are_assigned_to_office_spaces(self):
 		self.amity.create_room({"room_name": "oculus", "room_type": "office"})
 		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
+		allocated_room_list = self.amity.get_list_of_allocated_rooms()
 		self.assertEqual(len(allocated_room_list), 0)
 		self.amity.create_person({"person_name":"percila njira",
 			"role":"staff",
@@ -109,13 +108,15 @@ class RoomTest(unittest.TestCase):
 		self.amity.create_person({"person_name": "oscar opondo",
 			"role":"staff",
 			"accomodation":"No"})
-		self.assertEqual(len(allocated_room_list), 2)
+		self.assertTrue(len(allocated_room_list), 2)
 
 
-	## THIS TEST DOESNT WORK
-	def test_that_living_allocation_is_randomized(self):
+	#Can you test that room now has person in room.occupants list?
+	def test_that_fellow_are_assigned_to_living_spaces(self):
 		self.amity.create_room({"room_name": "java", "room_type": "living"})
 		self.amity.create_room({"room_name": "ruby", "room_type": "living"})
+		allocated_room_list = self.amity.get_list_of_allocated_rooms()
+		self.assertEqual(len(allocated_room_list), 0)
 		self.amity.create_person({"person_name":"samuel gaamuwa",
 			"role":"fellow",
 			"accomodation":"No"})
@@ -134,7 +135,7 @@ class RoomTest(unittest.TestCase):
 		self.amity.create_person({"person_name": "arnold okoth",
 			"role":"fellow",
 			"accomodation":"No"})
-		self.assertTrue(len(self.amity.allocated_rooms), 2)
+		self.assertTrue(len(allocated_room_list), 2)
 
 	def test_unallocated_person_list_increases_when_room_is_full(self):
 		pass
