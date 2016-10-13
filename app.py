@@ -1,8 +1,8 @@
 """
 Usage:
     create_room (Living|Office) <room_name>...
-    add_person <person_name> (Fellow|Staff) [--accomodation=N]
-    reallocate_person <employee_id> <new_room_name>
+    add_person <person_name> (Fellow|Staff) [--accomodation=no]
+    reallocate_person <person_name> <new_room_name>
     load_people <filename>
     print_allocations [--o=filename]
     print_unallocated [--o=filename]
@@ -16,7 +16,7 @@ Options:
     -i --interactive  Interactive Mode
     --o --filename    Specify filename
     --db              Name of SQLite database
-    --accommodation   If person needs accommodation [default='N']
+    --accommodation   If person needs accommodation [default='no']
 """
 
 import cmd
@@ -77,7 +77,7 @@ class AmityInteractive(cmd.Cmd):
         global amity
         multiple_rooms = arg["<room_name>"]
         for room in multiple_rooms:
-            print('Room Name: '+room.upper())
+            print("Room Name: "+room.upper())
             room_type = input("Enter a room type, either 'office' or 'living': ")
             valid = self.is_room_input_valid(room_type)
             if valid:
@@ -98,13 +98,14 @@ class AmityInteractive(cmd.Cmd):
         Create a person and assign them to a room in Amity. 
 
         Usage:
-            add_person <person_name> [--accomodation=N]
+            add_person <person_name> [--accomodation=no]
         """
         global amity
         person = arg["<person_name>"]
         wants_accomodation = arg["--accomodation"]
-        print('Name: '+person.upper())
-        print('Wants Accomodation: '+wants_accomodation.upper())
+        print("Name: "+person.upper())
+        if wants_accomodation == "yes" or wants_accomodation == "no":
+            print("Wants Accomodation: "+wants_accomodation)
         person_type = input("Enter a role, either 'staff' or 'fellow': ")
         valid = self.is_role_input_valid(person_type)
         if valid:
@@ -115,7 +116,7 @@ class AmityInteractive(cmd.Cmd):
         #print(amity.get_list_of_allocated_staff())
 
     def is_role_input_valid(self, role):
-        if role == 'staff' or role == 'fellow':
+        if role == "staff" or role == "fellow":
             return True
         else:
             return False
@@ -123,7 +124,7 @@ class AmityInteractive(cmd.Cmd):
     @docopt_cmd
     def do_reallocate_person(self, arg):
         """
-        Reallocate a person using their name and the new room name.new_room
+        Reallocate a person from their current room to another room.
 
         Usage:
             reallocate_person <person_name> 
@@ -132,7 +133,7 @@ class AmityInteractive(cmd.Cmd):
         person_name = arg["<person_name>"]
         person = self.get_person(person_name)
         if person:
-            print('Name: '+person.person.upper())
+            print("Name: "+person.person.upper())
             new_room = input("Enter the name of the new room: ")
             amity.reallocate_person(person, new_room) 
         else: 
@@ -165,7 +166,7 @@ class AmityInteractive(cmd.Cmd):
 
         #print(person_functions.add_people_to_db())
         #print(room_functions.add_rooms_to_db())
-        print('Goodbye!')
+        print("Goodbye!")
         exit()
 
 #if opt['--interactive']:
@@ -174,4 +175,4 @@ if __name__ == "__main__":
         intro()
         AmityInteractive().cmdloop()
     except KeyboardInterrupt:
-        print('Application Exiting')
+        print("Application Exiting")
