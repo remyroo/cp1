@@ -14,24 +14,20 @@ class Amity(object):
 		self.allocated_staff = []
 		self.allocated_fellows = []
 		self.unallocated_people = []
-		# self.unallocated_staff = []
-		# self.unallocated_fellows = []
 		self.all_rooms = []
 		self.living_spaces = []
 		self.office_spaces = []
 		self.allocated_rooms = []
-		self.unallocated_living = []
-		self.unallocated_office = []
 
 	def create_room(self, room):
 		if room["room_type"] == "office":
 			new_room = OfficeSpace(room["room_name"])
 			self.office_spaces.append(new_room)
-			print ("You have added "+new_room.room_name.upper()+ " to Office Spaces in Amity")
+			print ("\n You have added "+new_room.room_name.upper()+" to Office Spaces in Amity \n")
 		else:
 			new_room = LivingSpace(room["room_name"])
 			self.living_spaces.append(new_room)
-			print ("You have added "+new_room.room_name.upper()+" to Living Spaces in Amity")
+			print ("\n You have added "+new_room.room_name.upper()+" to Living Spaces in Amity \n")
 		self.all_rooms.append(new_room)
 
 	def create_person(self, person):
@@ -41,18 +37,19 @@ class Amity(object):
 		If the person is a fellow and wants accomodation, the assign fellow to living space function
 		is also called.
 		'''  
-
 		if person["role"] == "staff":
 			new_person = Staff(person["person_name"])
 			self.staff_list.append(new_person)
-			print ("You have added "+new_person.person.upper()+" as Staff in Amity") 
+			print ("\n You have added "+new_person.person.upper()+" as Staff in Amity") 
 		else:
 			new_person = Fellow(person["person_name"])
 			new_person.accomodation = person["wants_accomodation"]
 			self.fellows_list.append(new_person)
-			print ("You have added "+new_person.person.upper()+" as a Fellow in Amity")
+			print ("\n You have added "+new_person.person.upper()+" as a Fellow in Amity")
 			if new_person.accomodation == "yes":
 				self.assign_fellow_to_living_space(new_person)
+			else:
+				self.unallocated_people.append(new_person)
 		self.all_people.append(new_person)
 		self.assign_person_to_office_space(new_person)
 		
@@ -70,11 +67,12 @@ class Amity(object):
 					new_person.assigned_office = random_room.room_name
 					self.allocated_staff.append(new_person)
 					self.allocated_people.append(new_person)
-					print ("You have added "+new_person.person.upper()+" to "+random_room.room_name.upper())
+					print ( new_person.person.upper()+" has been assigned to "+random_room.room_name.upper()+"\n")
 				else:
-					print (random_room.room_name+" is full")
+					print (random_room.room_name+" is full. \n")
 					random_room = self.get_random_room("office")
 				self.allocated_rooms.append(random_room)
+
 		elif type(new_person) == Fellow:
 			if len(self.office_spaces) > 0:
 				random_room = self.get_random_room("office")
@@ -83,11 +81,13 @@ class Amity(object):
 					new_person.assigned_office = random_room.room_name
 					self.allocated_fellows.append(new_person)
 					self.allocated_people.append(new_person)
-					print ("You have added "+new_person.person.upper()+" to "+random_room.room_name.upper())
+					print (new_person.person.upper()+" has been assigned to "+random_room.room_name.upper()+"\n")
 				else:
-					print (random_room.room_name+" is full")
+					print (random_room.room_name+" is full. \n")
 					random_room = self.get_random_room("office")
 				self.allocated_rooms.append(random_room)
+		else:
+			self.unallocated_people.append(new_person)
 			
 	def assign_fellow_to_living_space(self, new_person):
 		if len(self.living_spaces) > 0:
@@ -96,20 +96,20 @@ class Amity(object):
 				random_room.occupants.append(new_person)
 				new_person.assigned_office = random_room.room_name
 				self.allocated_fellows.append(new_person)
-				print ("You have added "+new_person.person.upper()+" to "+random_room.room_name.upper())
+				print (new_person.person.upper()+" has been assigned to "+random_room.room_name.upper()+"\n")
 			else:
-				print (random_room.room_name+" is full")
+				print (random_room.room_name+" is full. \n")
 				random_room = self.get_random_room("living")
 			self.allocated_rooms.append(random_room)
 			self.allocated_people.append(new_person)
+		else:
+			self.unallocated_people.append(new_person)
 
 	def get_random_room(self, room_type):
 		'''
 		Randomizes the room selection depending on whether you are searching
 		for offices or living spaces respectively. 
 		'''
-
-		random_room = ""
 		if room_type == "office":
 			random_room = self.office_spaces[random.randint(0, (len(self.office_spaces) -1))]
 		else:
@@ -120,7 +120,6 @@ class Amity(object):
 		'''
 		Checks whether the occupants of a room are less than their respecitve capacities.
 		'''
-
 		if random_room.room_type == "OfficeSpace":
 			if len(random_room.occupants) < 6:
 				return True
@@ -138,15 +137,14 @@ class Amity(object):
 		extracts the room names as strings which are then stored in a rooms list
 		to allow for comparison.
 		'''
-
 		rooms = []
 		for room in self.all_rooms:
 			rooms.append(room.room_name)
 		if room_name not in rooms:
-			print ("Room not available")
+			print ("\n This room is not available. \n")
 		elif type(person) == Staff:
 			if person.assigned_office == room_name:
-				print ("Person is currently assigned to " +room_name)
+				print ("\n This person is already assigned to "+room_name+"\n")
 			else:
 				for room in self.all_rooms:
 					if room.room_name == room_name and type(room) == OfficeSpace:
@@ -156,87 +154,87 @@ class Amity(object):
 							self.allocated_staff.append(person)
 							self.allocated_people.append(person)
 							self.allocated_rooms.append(room)
-							print ("You have reallocated "+person.person.upper()+" to "+room.room_name.upper())
+							print ("\n You have reallocated "+person.person.upper()+" to "+room.room_name.upper()+"\n")
 						else:
-							print (room.room_name+" is full")
+							print ("\n"+room.room_name+" is full. \n")
 					elif room.room_name == room_name and type(room) is not OfficeSpace:
-						print("Staff cannot be assigned to living spaces")
+						print("\n Staff cannot be assigned to living spaces. \n")
 		elif type(person) == Fellow:
 			if person.assigned_office == room_name:
-				print ("Person is currently assigned to this office")
+				print ("\n This person is already assigned to this office. \n")
 			elif person.assigned_living == room_name:
-				print ("Person is currently assigned to this living space")
+				print ("\n This person is already assigned to this living space. \n")
 			else:
 				for room in self.all_rooms:
 					if room.room_name == room_name:
 						if self.is_room_available(room) == True:
 							if type(room) == LivingSpace:
 								person.assigned_living = room.room_name
-								print ("You have reallocated "+person.person.upper()+" to "+room.room_name.upper())
+								print ("\n You have reallocated "+person.person.upper()+" to "+room.room_name.upper()+"\n")
 							elif type(room) == OfficeSpace:
 								person.assigned_office = room.room_name
-								print ("You have reallocated "+person.person.upper()+" to "+room.room_name.upper())
+								print ("\n You have reallocated "+person.person.upper()+" to "+room.room_name.upper()+"\n")
 							room.occupants.append(person)
 							self.allocated_fellows.append(person)
 							self.allocated_people.append(person)
 							self.allocated_rooms.append(room)
 						else:
-							print (room.room_name+" is full")				
+							print ("\n"+room.room_name+" is full. \n")				
 	
 	def write_allocated_to_terminal(self):
-		print ("Printing allocations to terminal \n")
+		print ("\n Printing allocations to the terminal... \n")
 		for room in self.allocated_rooms:
 			if len(room.occupants) > 0:
-				print (room.room_name.upper())
+				print ("\n"+room.room_name.upper())
 				print ("-"*20)
-				for occupant in room.occupants:
-					print (occupant.person.upper()+"\t")
+				print (", ".join([occupant.person.upper() for occupant in room.occupants]))
+				print ("\n")
+			else:
+				print ("\n No one has been allocated yet. \n")
 
 	def write_allocated_to_file(self, filename):
-		print ("Printing allocations to txt file "+filename)
+		print ("\n Printing allocations to txt file... "+filename)
 		with open(filename, mode="w", encoding='utf-8') as text:
 			for room in self.allocated_rooms:
 				if len(room.occupants) > 0:
 					text.write(room.room_name.upper()+"\n")
 					text.write("-"*20 +"\n")
-				for occupant in room.occupants:
-					text.write(occupant.person.upper()+"\n")
-
+					text.write(", ".join([occupant.person.upper() for occupant in room.occupants]))	
+					text.write("\n")
+				else:
+					text.write("No one has been allocated yet.\n")
+			
 	def write_unallocated_to_terminal(self):
-		print ("Printing unallocated people to terminal \n")
+		print ("\n Printing unallocated people to the terminal... \n")
 		if len(self.unallocated_people) > 0:
-			for person in self.unallocated_people:
-				print ("Unallocated people:")
-				print ("-"*20)
-				print (person.person.upper()+"\t")
-				
-
+			print ("\n Unallocated people:"+"\n")
+			print ("-"*20)
+			print (", ".join([person.person.upper() for person in self.unallocated_people]))
+			print ("\n")
+		else: 
+			print("There are currently no unallocated people.\n")
+			
 	def write_unallocated_to_file(self, filename):
-		print ("Printing unallocated to txt file "+filename)
+		print ("Printing unallocated people to txt file "+filename)
 		with open(filename, mode="w", encoding='utf-8') as text:
 			if len(self.unallocated_people) > 0:
-				for person in self.unallocated_people:
-					text.write("Unallocated people:")
-					text.write("-"*20 +"\n")
-					text.write(person.person.upper()+"\n")
+				text.write("Unallocated people:"+"\n")
+				text.write("-"*20 +"\n")
+				text.write(", ".join([person.person.upper() for person in self.unallocated_people]))
+				text.write("\n")
+			else:
+				text.write("There are currently no unallocated people.\n")
 
 	def print_room(self, room_name):
 		for room in self.all_rooms:
-			if room.room_name == room_name.strip():
-				print (room.room_name.upper())
-				print ("-"*20)
-				for occupant in room.occupants:
-					print (occupant.person.upper())	
-
-	def filter_unallocated_people(self):
-		for person in self.all_people:
-			print (self.all_people)
-			if type(person) == Staff:
-				if person.assigned_office == False:
-					self.unallocated_people.append(person)
-			elif type(person) == Fellow:
-				if person.assigned_office == False and person.assigned_living == False:
-					self.unallocated_people.append(person)				
+			if room.room_name == room_name:
+				if len(room.occupants) > 0:
+					print (room.room_name.upper())
+					print ("-"*20)
+					print (", ".join([occupant.person.upper() for occupant in room.occupants]))
+					print ("\n")
+				else:
+					print ("This room is empty. \n")	
 
 	def load_people(self, filname):
 			pass

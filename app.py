@@ -7,15 +7,14 @@ Usage:
     print_allocations [--o=filename]
     print_unallocated [--o=filename]
     print_room <room_name>
-    save_state [--db=sqlite_database]
-    load_state <sqlite_database>
+    save_state [--db=sqalchemy_database]
+    load_state <sqalchemy_database>
     quit
     
 Options:
-    -h --help         Show this screen.
-    -i --interactive  Interactive Mode
-    --o --filename    Specify filename
-    --db              Name of SQLite database
+    --h               Show this screen.
+    --o               Specify filename
+    --db              Name of SQAlchemy database
     --accommodation   If person needs accommodation [default='no']
 """
 
@@ -53,21 +52,21 @@ def docopt_cmd(func):
     return fn
 
 def intro():
-    print("WELCOME TO AMITY SPACE ALLOCATION!".center(70))
+    print ("WELCOME TO AMITY SPACE ALLOCATION!".center(70))
     print ("Allocate rooms to staff and fellows in Amity".center(70))
-    print ("1. help".center(70))
-    print ("2. quit".center(70))
+    print ("-> help".center(70))
+    print ("-> quit".center(70))
 
 
 class AmityInteractive(cmd.Cmd):
-    prompt = 'Start>>>'
+    prompt = 'Start>>>  '
 
     @docopt_cmd
     def do_create_room(self, arg):
         """
-        Create a room in Amity. A room can either be an office or living space.
+        Creates a room in Amity. A room can either be an office or living space.
         Create as many rooms as possible by specifying multiple room names
-        after the create_room command
+        after the create_room command.
         
         Usage:
             create_room <room_name>...
@@ -93,7 +92,7 @@ class AmityInteractive(cmd.Cmd):
     @docopt_cmd 
     def do_add_person(self, arg):
         """
-        Create a person and assign them to a room in Amity. 
+        Creates a person and assign them to a room in Amity. 
 
         Usage:
             add_person <person_name> [--accomodation=no]
@@ -110,8 +109,6 @@ class AmityInteractive(cmd.Cmd):
             amity.create_person({"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
         else:
             input("Please enter either 'staff', 'fellow': ")
-        #print(amity.get_list_of_people())
-        #print(amity.get_list_of_allocated_staff())
 
     def is_role_input_valid(self, role):
         if role == "staff" or role == "fellow":
@@ -122,7 +119,7 @@ class AmityInteractive(cmd.Cmd):
     @docopt_cmd
     def do_reallocate_person(self, arg):
         """
-        Reallocate a person from their current room to another room.
+        Reallocates a person from their current room to another room.
 
         Usage:
             reallocate_person <person_name> 
@@ -139,7 +136,7 @@ class AmityInteractive(cmd.Cmd):
 
     def get_person(self, person_name):
         '''
-        This is a helper function that verifies the person entered is 
+        This is a helper function that verifies the person entered 
         exists in the list of all people. 
         '''
         names = []
@@ -155,7 +152,7 @@ class AmityInteractive(cmd.Cmd):
     @docopt_cmd
     def do_print_allocations(self, arg):
         '''
-        Print the room and people allocations
+        Print the room and people allocations.
 
         Usage: 
             print_allocations [--o=filename]
@@ -170,7 +167,7 @@ class AmityInteractive(cmd.Cmd):
     @docopt_cmd
     def do_print_unallocated(self, arg):
         '''
-        Print the people who have not been allocated a room
+        Print the people who have not been allocated a room.
 
         Usage: 
             print_unallocated [--o=filename]
@@ -193,7 +190,6 @@ class AmityInteractive(cmd.Cmd):
         global amity
         room_name = arg["<room_name>"]
         amity.print_room(room_name)
-
 
     @docopt_cmd
     def do_quit(self, arg):
