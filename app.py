@@ -62,8 +62,6 @@ def intro():
 class AmityInteractive(cmd.Cmd):
     prompt = 'Start>>>'
 
-    # file = None
-
     @docopt_cmd
     def do_create_room(self, arg):
         """
@@ -104,10 +102,10 @@ class AmityInteractive(cmd.Cmd):
         person = arg["<person_name>"]
         wants_accomodation = arg["--accomodation"]
         print("Name: "+person.upper())
-        if wants_accomodation == "yes" or wants_accomodation == "no":
-            print("Wants Accomodation: "+wants_accomodation)
         person_type = input("Enter a role, either 'staff' or 'fellow': ")
         valid = self.is_role_input_valid(person_type)
+        if wants_accomodation == "yes" or wants_accomodation == "no":
+            print("Wants Accomodation: "+wants_accomodation)
         if valid:
             amity.create_person({"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
         else:
@@ -140,6 +138,10 @@ class AmityInteractive(cmd.Cmd):
             print("This person does not exist!")
 
     def get_person(self, person_name):
+        '''
+        This is a helper function that verifies the person entered is 
+        exists in the list of all people. 
+        '''
         names = []
         for person in amity.all_people:
             names.append(person.person)
@@ -149,10 +151,48 @@ class AmityInteractive(cmd.Cmd):
             for person in amity.all_people:
                 if person.person == person_name:
                     return person
+
+    @docopt_cmd
+    def do_print_allocations(self, arg):
+        '''
+        Print the room and people allocations
+
+        Usage: 
+            print_allocations [--o=filename]
+        '''
+        global amity
+        filename = arg["--o"]
+        if filename:
+            amity.write_allocated_to_file(filename)
+        else:
+            amity.write_allocated_to_terminal()
         
+    @docopt_cmd
+    def do_print_unallocated(self, arg):
+        '''
+        Print the people who have not been allocated a room
 
+        Usage: 
+            print_unallocated [--o=filename]
+        '''
+        global amity
+        filename = arg["--o"]
+        if filename:
+            amity.write_unallocated_to_file(filename)
+        else:
+            amity.write_unallocated_to_terminal()
 
+    @docopt_cmd
+    def do_print_room(self, arg):
+        '''
+        Print the people allocated to a specified room.
 
+        Usage:
+            print_room <room_name>
+        '''
+        global amity
+        room_name = arg["<room_name>"]
+        amity.print_room(room_name)
 
 
     @docopt_cmd
@@ -164,12 +204,10 @@ class AmityInteractive(cmd.Cmd):
             quit
         """
 
-        #print(person_functions.add_people_to_db())
-        #print(room_functions.add_rooms_to_db())
         print("Goodbye!")
         exit()
 
-#if opt['--interactive']:
+
 if __name__ == "__main__":
     try:
         intro()
