@@ -150,6 +150,18 @@ class AmityInteractive(cmd.Cmd):
                     return person
 
     @docopt_cmd
+    def do_load_people(self, arg):
+        '''
+        Add people to rooms from a txt file.
+
+        Usage:
+            load_people <filename>
+        '''
+        global amity
+        filename = arg["<filename>"]
+        amity.load_people_from_file(filename)
+
+    @docopt_cmd
     def do_print_allocations(self, arg):
         '''
         Print the room and people allocations.

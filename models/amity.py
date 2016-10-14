@@ -46,7 +46,7 @@ class Amity(object):
 			new_person.accomodation = person["wants_accomodation"]
 			self.fellows_list.append(new_person)
 			print ("\n You have added "+new_person.person.upper()+" as a Fellow in Amity")
-			if new_person.accomodation == "yes":
+			if new_person.accomodation == "yes" or new_person.accomodation == "Y":
 				self.assign_fellow_to_living_space(new_person)
 			else:
 				self.unallocated_people.append(new_person)
@@ -181,6 +181,21 @@ class Amity(object):
 						else:
 							print ("\n"+room.room_name+" is full. \n")				
 	
+	def load_people_from_file(self, filename):
+			with open("./models/"+filename, mode="r") as text:
+				people_list = text.readlines()
+				for people in people_list:
+					person = people.split()
+					person_name = person[0]+" "+person[1]
+					role = person[2]
+					if role == "STAFF":
+						person_dict = {"person_name":person_name, "role":"staff"}
+						self.create_person(person_dict)
+					if role == "FELLOW":
+						accomodation = person[3]
+						person_dict = {"person_name":person_name, "role":"fellow", "wants_accomodation":accomodation}
+						self.create_person(person_dict)
+
 	def write_allocated_to_terminal(self):
 		print ("\n Printing allocations to the terminal... \n")
 		for room in self.allocated_rooms:
@@ -235,9 +250,6 @@ class Amity(object):
 					print ("\n")
 				else:
 					print ("This room is empty. \n")	
-
-	def load_people(self, filname):
-			pass
 
 	def get_list_of_rooms(self):
 		return self.all_rooms	
