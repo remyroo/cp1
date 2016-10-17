@@ -60,7 +60,7 @@ class RoomTest(unittest.TestCase):
 			"wants_accomodation":"no"})
 		self.amity.create_person({"person_name":"samuel gaamuwa",
 			"role":"fellow",
-			"wants_accomodation":"no"})
+			"wants_accomodation":"yes"})
 		self.assertEqual(len(allocation_list), 2)
 
 	def test_staff_added_to_allocated_staff_list(self):
@@ -73,6 +73,7 @@ class RoomTest(unittest.TestCase):
 		self.assertEqual(len(allocated_staff_list), 1)
 
 	def test_fellow_added_to_allocated_fellow_list(self):
+		self.amity.create_room({"room_name":"oculus", "room_type":"office"})
 		self.amity.create_room({"room_name":"ruby", "room_type":"living"})
 		allocated_fellow_list = self.amity.get_list_of_allocated_fellows()
 		self.assertEqual(len(allocated_fellow_list), 0)
@@ -156,12 +157,12 @@ class RoomTest(unittest.TestCase):
 		self.amity.create_room({"room_name":"oculus", "room_type":"office"})
 		self.assertEqual(len(allocated_list), 0)
 		self.amity.create_person({"person_name":"percila njira",
-			"role":"fellow",
+			"role":"staff",
 			"wants_accomodation":"no"})
 		self.amity.create_person({"person_name":"samuel gaamuwa",
 			"role":"fellow",
 			"wants_accomodation":"no"})
-		self.assertEqual(len(allocated_list), 2)
+		self.assertEqual(len(allocated_list), 1)
 
 	def test_allocations_can_be_printed_to_terminal(self):
 		self.amity.create_room({"room_name":"oculus", "room_type":"office"})
@@ -232,18 +233,18 @@ class RoomTest(unittest.TestCase):
 			"wants_accomodation":"yes"})
 		self.amity.print_room(self.amity.get_list_of_rooms()[0].room_name)
 
-	# def test_load_people_from_file(self):
-	# 	#Test has error related to fellows_list. But functionality works. 
-	# 	self.amity.create_room({"room_name":"oculus", "room_type":"office"})
-	# 	self.amity.create_room({"room_name": "krypton", "room_type": "office"})
-	# 	self.amity.create_room({"room_name":"ruby", "room_type":"living"})
-	# 	staff_list = self.amity.get_list_of_allocated_staff()
-	# 	fellows_list = self.amity.get_list_of_allocated_fellows()
-	# 	self.assertEqual(len(staff_list), 0)
-	# 	self.assertEqual(len(fellows_list), 0)
-	# 	self.amity.load_people_from_file("test.txt")
-	# 	self.assertEqual(len(staff_list), 3)
-	# 	self.assertEqual(len(fellows_list), 4)
+	def test_load_people_from_file(self):
+		#Test has new error - can't find load_people.txt file - but functionality works. 
+		self.amity.create_room({"room_name":"oculus", "room_type":"office"})
+		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
+		self.amity.create_room({"room_name":"ruby", "room_type":"living"})
+		staff_list = self.amity.get_list_of_allocated_staff()
+		fellows_list = self.amity.get_list_of_allocated_fellows()
+		self.assertEqual(len(staff_list), 0)
+		self.assertEqual(len(fellows_list), 0)
+		self.amity.load_people_from_file("load_people.txt")
+		self.assertEqual(len(staff_list), 3)
+		self.assertEqual(len(fellows_list), 4)
 
 
 
