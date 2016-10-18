@@ -105,7 +105,7 @@ class Amity(object):
 			random_room = self.get_random_room("living")
 			if self.is_room_available(random_room) == True:
 				random_room.occupants.append(new_person)
-				new_person.assigned_office = random_room.room_name
+				new_person.assigned_living = random_room.room_name
 				if new_person not in self.allocated_fellows: self.allocated_fellows.append(new_person)
 				if random_room not in self.allocated_rooms: self.allocated_rooms.append(random_room)
 				text = ("\n"+new_person.person.upper()+" has been assigned to "+random_room.room_name.upper()+"\n")
@@ -258,6 +258,7 @@ class Amity(object):
 				else:
 					text = ("This room is empty. \n")	
 				print (text)
+
 
 	def get_list_of_rooms(self):
 		return self.all_rooms	

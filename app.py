@@ -20,9 +20,10 @@ Options:
 
 import cmd
 from docopt import docopt, DocoptExit
-from models.amity import Amity
+from models.db_actions import Database, amity
 
-amity = Amity()
+# amity = Amity()
+database = Database()
 
 def docopt_cmd(func):
     """
@@ -202,6 +203,38 @@ class AmityInteractive(cmd.Cmd):
         global amity
         room_name = arg["<room_name>"]
         amity.print_room(room_name)
+
+    @docopt_cmd
+    def do_save_state(self, arg):
+        '''
+        Save all the data in the app to a SQAlchemy database. 
+        Specifying the --db parameter explicitly stores the data in the sql_database specified.
+
+        Usage:
+            save_state [--db=sqalchemy_database]
+        '''
+        global amity
+        db_name = arg["--db"]
+        if db_name:
+            database.save_state(db_name)
+        else:
+            database.save_state("amity.db")
+       
+       # print ("The application data has been saved to "+db_name.upper())
+       
+    
+    @docopt_cmd
+    def do_load_state(self, arg):
+        '''
+        Loads data from a database into the application.
+
+        Usage:
+            load_state <sqalchemy_database>
+        '''
+        global amity
+        db_name = arg["<sqalchemy_database>"]
+        database.load_state(db_name)
+        print ("The application data has been loaded from "+db_name.upper())
 
     @docopt_cmd
     def do_quit(self, arg):
