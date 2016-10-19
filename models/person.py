@@ -11,7 +11,10 @@ class Person(object):
 		return self.__class__.__name__
 
 class Staff(Person):	
-	pass
+	def __init__(self, person):
+		super(Staff, self).__init__(person)
+		self.accomodation = "None"
+		self.assigned_living = "None"
 
 class Fellow(Person):
 	def __init__(self, person):

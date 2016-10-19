@@ -20,16 +20,25 @@ class Amity(object):
 		self.allocated_rooms = []
 
 	def create_room(self, room):
+		'''
+		First check that the new room being created does not 
+		already exist.
+		'''
+		for rooms in self.all_rooms:
+			if room["room_name"] == rooms.room_name:
+				print (rooms.room_name.upper()+" already exists.")
+				return ("stop")
 		if room["room_type"] == "office":
 			new_room = OfficeSpace(room["room_name"])
+			self.all_rooms.append(new_room)
 			self.office_spaces.append(new_room)
 			text = ("\n You have added "+new_room.room_name.upper()+" to Office Spaces in Amity \n")
 		else:
 			new_room = LivingSpace(room["room_name"])
+			self.all_rooms.append(new_room)
 			self.living_spaces.append(new_room)
 			text = ("\n You have added "+new_room.room_name.upper()+" to Living Spaces in Amity \n")
 		print (text)
-		self.all_rooms.append(new_room)
 
 	def create_person(self, person):
 		'''
@@ -38,20 +47,26 @@ class Amity(object):
 		If the person is a fellow and wants accomodation, the assign fellow to living space function
 		is also called.
 		'''  
+		for people in self.all_people:
+			if person["person_name"] == people.person:
+				print (people.person.upper()+" already exists.")
+				return ("stop")
 		if person["role"] == "staff":
-			new_person = Staff(person["person_name"])
+			new_person = Staff(person["person_name"]) 
+			self.all_people.append(new_person)
 			self.staff_list.append(new_person)
-			print ("\n You have added "+new_person.person.upper()+" as Staff in Amity") 
+			text = ("\n You have added "+new_person.person.upper()+" as Staff in Amity") 
 		else:
 			new_person = Fellow(person["person_name"])
 			new_person.accomodation = person["wants_accomodation"]
+			self.all_people.append(new_person)
 			self.fellows_list.append(new_person)
-			print ("\n You have added "+new_person.person.upper()+" as a Fellow in Amity")
+			text = ("\n You have added "+new_person.person.upper()+" as a Fellow in Amity")
 			if new_person.accomodation == "yes" or new_person.accomodation == "Y":
 				self.assign_fellow_to_living_space(new_person)
 			else:
 				self.unallocated_people.append(new_person)
-		self.all_people.append(new_person)
+		print (text)
 		self.assign_person_to_office_space(new_person)
 		
 	def assign_person_to_office_space(self, new_person):
@@ -72,7 +87,7 @@ class Amity(object):
 					text = (new_person.person.upper()+" has been assigned to "+random_room.room_name.upper()+"\n")
 				else:
 					text = ("\n"+random_room.room_name.upper()+" is full. "+new_person.person.upper()+" cannot be assigend here. \n")
-					if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)
+					# if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)
 					# random_room = self.get_random_room("office")
 					# self.assign_person_to_office_space(new_person) --> this creates a stack overflow error 
 				    # ie RecursionError: maximum recursion depth exceeded while calling a Python object	
@@ -98,7 +113,7 @@ class Amity(object):
 				print (text)
 			else:
 				print ("There are no offices in Amity. Use the create_room <room_name> function to create one.")
-				if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)
+				if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)		
 			
 	def assign_fellow_to_living_space(self, new_person):
 		if len(self.living_spaces) > 0:
@@ -190,7 +205,8 @@ class Amity(object):
 							if room not in self.allocated_rooms: self.allocated_rooms.append(room)
 						else:
 							print ("\n"+room.room_name+" is full. \n")				
-	
+		if person in self.unallocated_people: self.unallocated_people.remove(person)
+
 	def load_people_from_file(self, filename):
 			with open("./models/"+filename, mode="r") as text:
 				people_list = text.readlines()
@@ -208,7 +224,7 @@ class Amity(object):
 
 	def write_allocated_to_terminal(self):
 		print ("\n Printing allocations to the terminal... \n")
-		for room in self.all_rooms:
+		for room in self.allocated_rooms:
 			text = "\n"+room.room_name.upper()+"\n"
 			text = text + ("-"*40 + "\n")			
 			if len(room.occupants) > 0:
@@ -235,7 +251,7 @@ class Amity(object):
 			text = text + ("-"*40 + "\n")
 			text = text + (", ".join([person.person.upper() for person in self.unallocated_people]))
 		else: 
-			text = text + "There are currently no unallocated people.\n"
+			text = "There are currently no unallocated people.\n"
 		print (text)
 			
 	def write_unallocated_to_file(self, filename):

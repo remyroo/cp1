@@ -109,7 +109,7 @@ class AmityInteractive(cmd.Cmd):
         if valid:
             amity.create_person({"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
         else:
-            input("Please enter either 'staff', 'fellow': ")
+            input("Please enter either 'staff' or 'fellow': ")
 
     def is_role_input_valid(self, role):
         if role == "staff" or role == "fellow":
@@ -217,10 +217,11 @@ class AmityInteractive(cmd.Cmd):
         db_name = arg["--db"]
         if db_name:
             database.save_state(db_name)
+            text = "The application data has been saved to "+db_name.upper()
         else:
             database.save_state("amity.db")
-       
-       # print ("The application data has been saved to "+db_name.upper())
+            text = "The application data has been saved to AMITY.DB"
+        print (text)
        
     
     @docopt_cmd
