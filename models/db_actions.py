@@ -5,7 +5,6 @@ from models.amity import Amity
 
 amity = Amity()
 
-
 class Database(object):
 
 	def save_state(self, db_name):
@@ -33,7 +32,7 @@ class Database(object):
 					session.add(new_room)
 					session.commit()
 		else:
-			print ("There are currently no rooms to save")
+			print ("\n There are currently no rooms to save \n")
 
 		db_people_table = session.query(People).all()
 		db_people = []
@@ -43,7 +42,7 @@ class Database(object):
 			for person in amity.all_people:
 				if person.person in db_people: 
 					session.query(People).filter_by(person_name=person.person).update({People.assigned_office: person.assigned_office})
-					session.query(People).filter_by(person_name=person.person).update({People.assigned_office: person.assigned_living})
+					session.query(People).filter_by(person_name=person.person).update({People.assigned_living: person.assigned_living})
 					session.commit()
 				else:
 					new_person = People()
@@ -55,14 +54,26 @@ class Database(object):
 					session.add(new_person)
 					session.commit()
 		else:
-			print ("There are currently no people to save")
-
+			print ("\n There are currently no people to save \n")
+			
 	def load_state(self, db_name):
 		self.engine = create_engine_db(db_name)
 		engine = create_engine("sqlite:///models/"+db_name)
 		Base.metadata.bind = engine
 		DBSession = sessionmaker(bind=engine)
 		session = DBSession()
+
+		db_rooms_table = session.query(Rooms).all()
+		for db_room in db_rooms_table:
+			amity.load_rooms_from_db({"room_name":db_room.room_name, 
+				"room_type":db_room.room_type}, db_room.room_occupants)
+
+		db_people_table = session.query(People).all()
+		for db_person in db_people_table:
+			amity.load_people_from_db({"person_name":db_person.person_name,
+				"role":db_person.person_role,
+				"wants_accomodation":db_person.accomodation}, 
+				db_person.assigned_office, db_person.assigned_living)
 
 
 

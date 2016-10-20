@@ -81,7 +81,7 @@ class AmityInteractive(cmd.Cmd):
             if valid:
                 amity.create_room({"room_name": room, "room_type": room_type})
             else:
-                input("Please enter either 'office' or 'living': ")
+                input("Please try again. Remember to enter either 'office' or 'living'.")
 
 
     def is_room_input_valid(self, room_type):
@@ -109,7 +109,7 @@ class AmityInteractive(cmd.Cmd):
         if valid:
             amity.create_person({"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
         else:
-            input("Please enter either 'staff' or 'fellow': ")
+            input("Please try again. Remember to enter either 'staff' or 'fellow'.")
 
     def is_role_input_valid(self, role):
         if role == "staff" or role == "fellow":
@@ -208,7 +208,8 @@ class AmityInteractive(cmd.Cmd):
     def do_save_state(self, arg):
         '''
         Save all the data in the app to a SQAlchemy database. 
-        Specifying the --db parameter explicitly stores the data in the sql_database specified.
+        Specifying the --db parameter explicitly stores the data
+        in the database specified.
 
         Usage:
             save_state [--db=sqalchemy_database]
@@ -227,7 +228,7 @@ class AmityInteractive(cmd.Cmd):
     @docopt_cmd
     def do_load_state(self, arg):
         '''
-        Loads data from a database into the application.
+        Loads data from a specified database into the application.
 
         Usage:
             load_state <sqalchemy_database>
