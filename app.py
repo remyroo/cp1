@@ -81,7 +81,7 @@ class AmityInteractive(cmd.Cmd):
             if valid:
                 amity.create_room({"room_name": room, "room_type": room_type})
             else:
-                input("Please try again. Remember to enter either 'office' or 'living'.")
+                print ("\n Please try again. Remember to enter either 'office' or 'living'. \n")
 
 
     def is_room_input_valid(self, room_type):
@@ -109,7 +109,7 @@ class AmityInteractive(cmd.Cmd):
         if valid:
             amity.create_person({"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
         else:
-            input("Please try again. Remember to enter either 'staff' or 'fellow'.")
+            print ("\n Please try again. Remember to enter either 'staff' or 'fellow'. \n")
 
     def is_role_input_valid(self, role):
         if role == "staff" or role == "fellow":

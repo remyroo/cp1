@@ -55,7 +55,7 @@ class Database(object):
 					session.commit()
 		else:
 			print ("\n There are currently no people to save \n")
-			
+
 	def load_state(self, db_name):
 		self.engine = create_engine_db(db_name)
 		engine = create_engine("sqlite:///models/"+db_name)
@@ -66,7 +66,7 @@ class Database(object):
 		db_rooms_table = session.query(Rooms).all()
 		for db_room in db_rooms_table:
 			amity.load_rooms_from_db({"room_name":db_room.room_name, 
-				"room_type":db_room.room_type}, db_room.room_occupants)
+				"room_type":db_room.room_type})
 
 		db_people_table = session.query(People).all()
 		for db_person in db_people_table:
@@ -74,6 +74,8 @@ class Database(object):
 				"role":db_person.person_role,
 				"wants_accomodation":db_person.accomodation}, 
 				db_person.assigned_office, db_person.assigned_living)
+
+		amity.populate_room_occupants_from_db_load()
 
 
 

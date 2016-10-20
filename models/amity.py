@@ -18,6 +18,8 @@ class Amity(object):
 		self.living_spaces = []
 		self.office_spaces = []
 		self.allocated_rooms = []
+		self.db_people_list = []
+		self.db_room_list = []
 
 	def create_room(self, room):
 		'''
@@ -86,10 +88,7 @@ class Amity(object):
 					text = (new_person.person.upper()+" has been assigned to "+random_room.room_name.upper()+"\n")
 				else:
 					text = ("\n"+random_room.room_name.upper()+" is full. "+new_person.person.upper()+" cannot be assigend here. \n")
-					if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)
-					# random_room = self.get_random_room("office")
-					# self.assign_person_to_office_space(new_person) --> this creates a stack overflow error 
-				    # ie RecursionError: maximum recursion depth exceeded while calling a Python object	
+					if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)	
 				print (text)
 			else:
 				print ("\n There are no offices in Amity. Use the create_room <room_name> function to create one. \n")
@@ -107,8 +106,6 @@ class Amity(object):
 				else:
 					text = ("\n"+random_room.room_name.upper()+" is full. "+new_person.person.upper()+" cannot be assigend here. \n")
 					if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)
-					# random_room = self.get_random_room("office")
-					# self.assign_person_to_office_space(new_person)
 				print (text)
 			else:
 				print ("There are no offices in Amity. Use the create_room <room_name> function to create one.")
@@ -126,8 +123,6 @@ class Amity(object):
 			else:
 				text = ("\n"+random_room.room_name.upper()+" is full. "+new_person.person.upper()+" cannot be assigend here. \n")
 				if new_person not in self.unallocated_people: self.unallocated_people.append(new_person)
-				# random_room = self.get_random_room("living")
-				# self.assign_fellow_to_living_space(new_person)
 			print (text)
 		else:
 			print ("\n There are no living rooms in Amity. Use the create_room <room_name> function to create one. \n")
@@ -180,6 +175,7 @@ class Amity(object):
 						if self.is_room_available(room) == True:
 							room.occupants.append(person)
 							person.assigned_office = room.room_name
+							if person not in self.allocated_people: self.allocated_people.append(person)
 							if room not in self.allocated_rooms: self.allocated_rooms.append(room)
 							print ("\n You have reallocated "+person.person.upper()+" to "+room.room_name.upper()+"\n")
 						else:
@@ -203,6 +199,7 @@ class Amity(object):
 								person.assigned_office = room.room_name
 								print ("\n You have reallocated "+person.person.upper()+" to "+room.room_name.upper()+"\n")
 							room.occupants.append(person)
+							if person not in self.allocated_people: self.allocated_people.append(person)
 							if room not in self.allocated_rooms: self.allocated_rooms.append(room)
 						else:
 							print ("\n"+room.room_name+" is full. \n")				
@@ -250,15 +247,15 @@ class Amity(object):
 			print ("\n There are currently no allocations. \n")
 
 	def write_allocated_to_file(self, filename):
-		print ("\n Printing allocations to txt file... "+filename)
+		print ("\n Printing allocations to txt file: "+filename)
 		with open(filename, mode="w", encoding='utf-8') as text:
 			for room in self.all_rooms:
+				text.write("\n"+room.room_name.upper()+"\n")
+				text.write("-"*40 +"\n")			
 				if len(room.occupants) > 0:
-					text.write(room.room_name.upper()+"\n")
-					text.write("-"*40 +"\n")
-					text.write(", ".join([occupant.person.upper() for occupant in room.occupants]))	
+					text.write(", ".join([occupant.person.upper() for occupant in room.occupants])+"\n")	
 				else:
-					text.write("No one has been allocated yet.")
+					text.write("No one has been allocated yet. \n")
 			
 	def write_unallocated_to_terminal(self):
 		if len(self.unallocated_people) > 0:
@@ -271,7 +268,7 @@ class Amity(object):
 		print (text)
 			
 	def write_unallocated_to_file(self, filename):
-		print ("\n Printing unallocated people to txt file "+filename)
+		print ("\n Printing unallocated people to txt file: "+filename)
 		with open(filename, mode="w", encoding='utf-8') as text:
 			if len(self.unallocated_people) > 0:
 				text.write("Unallocated people:"+"\n")
@@ -294,29 +291,24 @@ class Amity(object):
 			text = ("\n There are no rooms yet. \n")	
 		print (text)
 
-	def load_rooms_from_db(self, room, occupants):
+	def load_rooms_from_db(self, room):
 		if room["room_type"] == "OfficeSpace":
 			new_room = OfficeSpace(room["room_name"])
-			new_room.occupants = occupants
+			self.db_room_list.append(new_room)
 			self.all_rooms.append(new_room)
 			self.office_spaces.append(new_room)
 		else:
 			new_room = LivingSpace(room["room_name"])
-			new_room.occupants = occupants
+			self.db_room_list.append(new_room)
 			self.all_rooms.append(new_room)
 			self.living_spaces.append(new_room)
-		print ("all rooms list")
-		print (self.all_rooms)
-		print ("living_spaces list")
-		print (self.living_spaces)
-		print ("office_spaces list")
-		print (self.office_spaces)
 
 	def load_people_from_db(self, person, assigned_office, assigned_living):
 		if person["role"] == "Staff":
 			new_person = Staff(person["person_name"])
 			new_person.assigned_office = assigned_office
 			new_person.assigned_living = assigned_living
+			self.db_people_list.append(new_person)
 			self.all_people.append(new_person)
 			self.staff_list.append(new_person)
 			self.allocated_people.append(new_person)
@@ -325,22 +317,25 @@ class Amity(object):
 			new_person = Fellow(person["person_name"])
 			new_person.assigned_office = assigned_office
 			new_person.assigned_living = assigned_living
+			self.db_people_list.append(new_person)
 			self.all_people.append(new_person)
 			self.fellows_list.append(new_person)
 			self.allocated_people.append(new_person)
 			self.allocated_fellows.append(new_person)
-		print ("all people list")
-		print (self.all_people)
-		print ("all staff list")
-		print (self.staff_list)
-		print ("all fellows list")
-		print (self.fellows_list)
-		
-		
-		
 
-
-
+	def populate_room_occupants_from_db_load(self):
+		'''
+		When saving to the database, a room's occupants are stored
+		as an integer. When loading the room back to the application, 
+		this function repopulates the room's occupant list
+		with people names. 
+		'''
+		for room in self.db_room_list:
+			for person in self.db_people_list:
+				if person.assigned_office == room.room_name:
+					room.occupants.append(person)
+				if person.assigned_living == room.room_name:
+					room.occupants.append(person)
 			
 
 	def get_list_of_rooms(self):
