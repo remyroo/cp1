@@ -71,23 +71,12 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             create_room <room_name>...
         """
-        global amity
-        multiple_rooms = arg["<room_name>"]
-        for room in multiple_rooms:
-            print("Room Name: "+room.upper())
+        for room in arg["<room_name>"]:
+            print ("Room Name: "+room.upper())
             room_type = input("Enter a room type, either 'office' or 'living': ")
-            valid = self.is_room_input_valid(room_type)
-            if valid:
+            if room_type in ["office", "living"]:
                 amity.create_room({"room_name": room, "room_type": room_type})
-            else:
-                print ("\n Please try again. Remember to enter either 'office' or 'living'. \n")
-
-
-    def is_room_input_valid(self, room_type):
-        if room_type == "office" or room_type == "living":
-            return True
-        else:
-            return False
+            else: print ("\n Please try again. Remember to enter either 'office' or 'living'. \n")
 
     @docopt_cmd 
     def do_add_person(self, arg):
@@ -95,26 +84,16 @@ class AmityInteractive(cmd.Cmd):
         Creates a person and assign them to a room in Amity. 
 
         Usage:
-            add_person <person_name> [--accomodation=no]
+            add_person <first_name> <last_name> [--accomodation=no]
         """
-        global amity
-        person = arg["<person_name>"]
+        person = arg["<first_name>"] + " " + arg["<last_name>"]
         wants_accomodation = arg["--accomodation"]
-        print("Name: "+person.upper())
+        print ("Name: "+person.upper())
         person_type = input("Enter a role, either 'staff' or 'fellow': ")
-        valid = self.is_role_input_valid(person_type)
-        if wants_accomodation == "yes" or wants_accomodation == "no":
-            print("Wants Accomodation: "+wants_accomodation)
-        if valid:
-            amity.create_person({"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
-        else:
-            print ("\n Please try again. Remember to enter either 'staff' or 'fellow'. \n")
-
-    def is_role_input_valid(self, role):
-        if role == "staff" or role == "fellow":
-            return True
-        else:
-            return False
+        if wants_accomodation in ["yes", "no"]: print ("Wants Accomodation: "+wants_accomodation)
+        if person_type in ["staff", "fellow"]: amity.create_person(
+            {"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
+        else: print ("\n Please try again. Remember to enter either 'staff' or 'fellow'. \n")
 
     @docopt_cmd
     def do_reallocate_person(self, arg):
@@ -124,7 +103,6 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             reallocate_person <person_name> 
         """
-        global amity
         person_name = arg["<person_name>"]
         person = self.get_person(person_name)
         if person:
@@ -148,6 +126,7 @@ class AmityInteractive(cmd.Cmd):
             for person in amity.all_people:
                 if person.person == person_name:
                     return person
+        #returned_person = [person for person in amity.all_people if person.person == person_name][0]
 
     @docopt_cmd
     def do_load_people(self, arg):
@@ -157,9 +136,7 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             load_people <filename>
         '''
-        global amity
-        filename = arg["<filename>"]
-        amity.load_people_from_file(filename)
+        amity.load_people_from_file(arg["<filename>"])
 
     @docopt_cmd
     def do_print_allocations(self, arg):
@@ -169,12 +146,8 @@ class AmityInteractive(cmd.Cmd):
         Usage: 
             print_allocations [--o=filename]
         '''
-        global amity
-        filename = arg["--o"]
-        if filename:
-            amity.write_allocated_to_file(filename)
-        else:
-            amity.write_allocated_to_terminal()
+        if arg["--o"]: amity.write_allocated_to_file(arg["--o"])
+        else: amity.write_allocated_to_terminal()
         
     @docopt_cmd
     def do_print_unallocated(self, arg):
@@ -184,12 +157,8 @@ class AmityInteractive(cmd.Cmd):
         Usage: 
             print_unallocated [--o=filename]
         '''
-        global amity
-        filename = arg["--o"]
-        if filename:
-            amity.write_unallocated_to_file(filename)
-        else:
-            amity.write_unallocated_to_terminal()
+        if arg["--o"]: amity.write_unallocated_to_file(arg["--o"])
+        else: amity.write_unallocated_to_terminal()
 
     @docopt_cmd
     def do_print_room(self, arg):
@@ -199,9 +168,7 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             print_room <room_name>
         '''
-        global amity
-        room_name = arg["<room_name>"]
-        amity.print_room(room_name)
+        amity.print_room(arg["<room_name>"])
 
     @docopt_cmd
     def do_save_state(self, arg):
@@ -213,17 +180,10 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             save_state [--db=sqalchemy_database]
         '''
-        global amity
-        db_name = arg["--db"]
-        if db_name:
-            database.save_state(db_name)
-            text = "The application data has been saved to "+db_name.upper()
-        else:
-            database.save_state("amity.db")
-            text = "The application data has been saved to AMITY.DB"
-        print (text)
-       
-    
+        db_name = arg['--db'] or 'amity.db'
+        database.save_state(db_name)
+        print ("The application data has been saved to "+db_name.upper()+"\n")
+
     @docopt_cmd
     def do_load_state(self, arg):
         '''
@@ -232,10 +192,8 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             load_state <sqalchemy_database>
         '''
-        global amity
-        db_name = arg["<sqalchemy_database>"]
-        database.load_state(db_name)
-        print ("The application data has been loaded from "+db_name.upper())
+        database.load_state(arg["<sqalchemy_database>"])
+        print ("\n The application data has been loaded from "+arg["<sqalchemy_database>"].upper()+"\n")
 
     @docopt_cmd
     def do_quit(self, arg):
@@ -255,4 +213,4 @@ if __name__ == "__main__":
         intro()
         AmityInteractive().cmdloop()
     except KeyboardInterrupt:
-        print("Application Exiting")
+        print("\n Application Exiting \n")

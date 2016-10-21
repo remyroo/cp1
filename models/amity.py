@@ -212,6 +212,7 @@ class Amity(object):
 		'''
 		old_office = person.assigned_office
 		for room in self.all_rooms:
+			print (room.occupants)
 			if room.room_name == old_office:
 				room.occupants.remove(person)
 		return room.occupants

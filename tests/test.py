@@ -1,6 +1,8 @@
+import os
 import unittest
 from models.amity import Amity
 from models.room import Room
+from models.database import *
 
 class RoomTest(unittest.TestCase):
 
@@ -246,11 +248,25 @@ class RoomTest(unittest.TestCase):
 		self.assertEqual(len(staff_list), 3)
 		self.assertEqual(len(fellows_list), 4)
 
+	def test_db_created_when_save_state_called(self):
+		# Test has error
+		database.create_engine_db("test.db")
+		self.assertTrue(os.path.exists("test.db"))
+		os.remove("test.db")
+
 	def test_db_rooms_loaded_to_application(self):
 		db_room_list = self.amity.get_list_of_db_rooms()
 		self.assertEqual(len(db_room_list), 0)
 		self.amity.load_rooms_from_db({"room_name":"oculus", "room_type":"office"})
 		self.assertEqual(len(db_room_list), 1)		
+
+	def test_db_people_loaded_to_application(self):
+		db_people_list = self.amity.get_list_of_db_people()
+		self.assertEqual(len(db_people_list), 0)
+		self.amity.load_people_from_db({"person_name":"percila njira",
+			"role":"fellow",
+			"wants_accomodation":"no"}, "oculus", "ruby")
+		self.assertEqual(len(db_people_list), 1)
 
 
 
