@@ -30,6 +30,7 @@ You can use the application to do the following:
 
 
 Appendix 1A - Simple Input Format
+
 OLUWAFEMI SULE FELLOW Y
 DOMINIC WALTERS STAFF
 SIMON PATTERSON FELLOW Y
