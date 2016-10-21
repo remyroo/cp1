@@ -246,6 +246,12 @@ class RoomTest(unittest.TestCase):
 		self.assertEqual(len(staff_list), 3)
 		self.assertEqual(len(fellows_list), 4)
 
+	def test_db_rooms_loaded_to_application(self):
+		db_room_list = self.amity.get_list_of_db_rooms()
+		self.assertEqual(len(db_room_list), 0)
+		self.amity.load_rooms_from_db({"room_name":"oculus", "room_type":"office"})
+		self.assertEqual(len(db_room_list), 1)		
+
 
 
 if __name__ == '__main__':

@@ -22,7 +22,6 @@ import cmd
 from docopt import docopt, DocoptExit
 from models.db_actions import Database, amity
 
-# amity = Amity()
 database = Database()
 
 def docopt_cmd(func):

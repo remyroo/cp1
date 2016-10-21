@@ -370,5 +370,12 @@ class Amity(object):
 	
 	def get_list_of_unallocated_people(self):
 		return self.unallocated_people
+	
+	def get_list_of_db_rooms(self):
+		return self.db_room_list
+
+	def get_list_of_db_people(self):
+		return self.db_people_list
+
 
 			
