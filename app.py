@@ -90,7 +90,7 @@ class AmityInteractive(cmd.Cmd):
         wants_accomodation = arg["--accomodation"]
         print ("Name: "+person.upper())
         person_type = input("Enter a role, either 'staff' or 'fellow': ")
-        if wants_accomodation in ["yes", "no"]: print ("Wants Accomodation: "+wants_accomodation)
+        if wants_accomodation in ["yes", "Y", "no"]: print ("Wants Accomodation: "+wants_accomodation)
         if person_type in ["staff", "fellow"]: amity.create_person(
             {"person_name": person, "role": person_type, "wants_accomodation": wants_accomodation})
         else: print ("\n Please try again. Remember to enter either 'staff' or 'fellow'. \n")
@@ -101,9 +101,9 @@ class AmityInteractive(cmd.Cmd):
         Reallocates a person from their current room to another room.
 
         Usage:
-            reallocate_person <person_name> 
+            reallocate_person <first_name> <last_name> 
         """
-        person_name = arg["<person_name>"]
+        person_name = arg["<first_name>"] + " " + arg["<last_name>"]
         person = self.get_person(person_name)
         if person:
             print("Name: "+person.person.upper())
@@ -117,16 +117,11 @@ class AmityInteractive(cmd.Cmd):
         This is a helper function that verifies the person entered 
         exists in the list of all people. 
         '''
-        names = []
-        for person in amity.all_people:
-            names.append(person.person)
-        if person_name not in names:
-            return False
-        else:
-            for person in amity.all_people:
-                if person.person == person_name:
-                    return person
-        #returned_person = [person for person in amity.all_people if person.person == person_name][0]
+        names = [person.person for person in amity.all_people]
+        if person_name not in names: return False
+        else: 
+            person = [person for person in amity.all_people if person.person == person_name][0]
+            return person
 
     @docopt_cmd
     def do_load_people(self, arg):
