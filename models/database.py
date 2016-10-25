@@ -28,4 +28,4 @@ def create_engine_db(db_name):
     engine = create_engine("sqlite:///"+db_name)
     Base.metadata.create_all(engine)
     return engine
-    
+

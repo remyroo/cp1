@@ -71,4 +71,4 @@ class Database(object):
 				db_person.assigned_office, db_person.assigned_living)
 
 		amity.populate_room_occupants_from_db_load()
-		
+
