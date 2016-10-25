@@ -2,3 +2,4 @@
 __pycache__/
 .cp-venv/
 .~lock.class_diagram.odt#
+.coverage.py

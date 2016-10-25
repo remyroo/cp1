@@ -198,8 +198,7 @@ class AmityInteractive(cmd.Cmd):
         Usage:
             quit
         """
-
-        print("Goodbye!")
+        print ("Goodbye!")
         exit()
 
 
@@ -208,4 +207,4 @@ if __name__ == "__main__":
         intro()
         AmityInteractive().cmdloop()
     except KeyboardInterrupt:
-        print("\n Application Exiting \n")
+        print ("\n Application Exiting \n")

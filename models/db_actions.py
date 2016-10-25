@@ -8,16 +8,13 @@ amity = Amity()
 class Database(object):
 
 	def save_state(self, db_name):
-		self.engine = create_engine_db(db_name)
-		engine = create_engine("sqlite:///models/"+db_name)
+		engine = create_engine_db(db_name)
 		Base.metadata.bind = engine
 		DBSession = sessionmaker(bind=engine)
 		session = DBSession()
 
 		db_rooms_table = session.query(Rooms).all()
-		db_rooms = []
-		for db_room in db_rooms_table:
-			db_rooms.append(db_room.room_name)	
+		db_rooms = [db_room.room_name for db_room in db_rooms_table]	
 		if len(amity.all_rooms) > 0:
 			for room in amity.all_rooms:
 				if room.room_name in db_rooms:
@@ -35,9 +32,7 @@ class Database(object):
 			print ("\n There are currently no rooms to save \n")
 
 		db_people_table = session.query(People).all()
-		db_people = []
-		for db_person in db_people_table:
-			db_people.append(db_person.person_name)
+		db_people = [db_person.person_name for db_person in db_people_table]
 		if len(amity.all_people) > 0:
 			for person in amity.all_people:
 				if person.person in db_people: 
@@ -58,7 +53,7 @@ class Database(object):
 
 	def load_state(self, db_name):
 		self.engine = create_engine_db(db_name)
-		engine = create_engine("sqlite:///models/"+db_name)
+		engine = create_engine("sqlite:///"+db_name)
 		Base.metadata.bind = engine
 		DBSession = sessionmaker(bind=engine)
 		session = DBSession()

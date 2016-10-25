@@ -2,7 +2,7 @@ import os
 import unittest
 from models.amity import Amity
 from models.room import Room
-from models.database import *
+from models.db_actions import Database
 
 class RoomTest(unittest.TestCase):
 
@@ -219,24 +219,23 @@ class RoomTest(unittest.TestCase):
 			"wants_accomodation":"yes"})
 		self.amity.write_unallocated_to_file("unallocated.txt")
 
-	def test_user_input_room_allocations_can_be_printed_to_terminal(self):
+	def test_user_specified_room_allocations_can_be_printed_to_terminal(self):
 		self.amity.create_room({"room_name":"oculus", "room_type":"office"})
 		self.amity.create_person({"person_name":"samuel gaamuwa",
 			"role":"fellow",
-			"wants_accomodation":"yes"})
+			"wants_accomodation":"no"})
 		self.amity.create_person({"person_name":"japheth obala",
 			"role":"fellow",
-			"wants_accomodation":"yes"})
+			"wants_accomodation":"no"})
 		self.amity.create_person({"person_name":"rehema wachira",
 			"role":"fellow",
-			"wants_accomodation":"yes"})
+			"wants_accomodation":"no"})
 		self.amity.create_person({"person_name":"ruth ogendi",
 			"role":"fellow",
-			"wants_accomodation":"yes"})
-		self.amity.print_room(self.amity.get_list_of_rooms()[0].room_name)
+			"wants_accomodation":"no"})
+		self.amity.print_room("oculus")
 
 	def test_load_people_from_file(self):
-		#Test has new error - can't find load_people.txt file - but functionality works. 
 		self.amity.create_room({"room_name":"oculus", "room_type":"office"})
 		self.amity.create_room({"room_name": "krypton", "room_type": "office"})
 		self.amity.create_room({"room_name":"ruby", "room_type":"living"})
@@ -244,13 +243,13 @@ class RoomTest(unittest.TestCase):
 		fellows_list = self.amity.get_list_of_allocated_fellows()
 		self.assertEqual(len(staff_list), 0)
 		self.assertEqual(len(fellows_list), 0)
-		self.amity.load_people_from_file("load_people.txt")
+		self.amity.load_people_from_file("load_people_test.txt")
 		self.assertEqual(len(staff_list), 3)
 		self.assertEqual(len(fellows_list), 4)
 
 	def test_db_created_when_save_state_called(self):
-		# Test has error
-		database.create_engine_db("test.db")
+		database = Database()
+		database.save_state("test.db")
 		self.assertTrue(os.path.exists("test.db"))
 		os.remove("test.db")
 
@@ -267,8 +266,6 @@ class RoomTest(unittest.TestCase):
 			"role":"fellow",
 			"wants_accomodation":"no"}, "oculus", "ruby")
 		self.assertEqual(len(db_people_list), 1)
-
-
 
 if __name__ == '__main__':
 	unittest.main()

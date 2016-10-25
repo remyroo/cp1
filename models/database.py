@@ -25,11 +25,7 @@ class People(Base):
 	assigned_living = Column(String(150), nullable=True)
 
 def create_engine_db(db_name):
-    engine = create_engine("sqlite:///models/"+db_name)
+    engine = create_engine("sqlite:///"+db_name)
     Base.metadata.create_all(engine)
-
-
-
-
-
-
+    return engine
+    
